@@ -4,7 +4,7 @@
 void HelloWorld::hello(const HttpRequestPtr &req,
                        std::function<void (const HttpResponsePtr &)> &&callback) {
     Json::Value json;
-    json["message"] = "Hello, Drogon!";
+    json["message"] = "Hello, Drogon ugly!";
     
     auto resp = HttpResponse::newHttpJsonResponse(json);
     callback(resp);
