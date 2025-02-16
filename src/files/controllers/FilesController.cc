@@ -1,9 +1,10 @@
+#include <utility> // for std::pair
 #include "FilesController.h"
 #include <drogon/MultiPart.h>
 #include <drogon/HttpRequest.h>
 #include "../validators/SaveMediaFilesDto.h"
 #include "../validators/RequestFormatValidator.h"
-#include "../validators/ValidateFieldsPresence.h"
+#include "../validators/ExistingFieldsChecker.h"
 
 using namespace std;
 using namespace drogon;
@@ -12,60 +13,25 @@ void FilesController::saveFile(const HttpRequestPtr& req, std::function<void (co
 
     MultiPartParser multiparser;
     int parsedRequest = multiparser.parse(req); 
-    unordered_map<string, bool> fieldsToValidate = {{"entity", false}, {"files", false}};
+    string name = "entity";
+    unordered_map<string, variant<string, vector<string>>> validatedFields = {{"entity", ""}, {"files", vector<string>{}}};
 
-   RequestFormatValidator::validateFormDataFormat(parsedRequest);
-   ValidateFieldsPresence ValidateFieldsPresence(multiparser, fieldsToValidate);
-    
-    std::vector<drogon::HttpFile> filesito = multiparser.getFiles();
-    auto yuju = next(filesito.begin(), 0)->getItemName();
-
-    //validate files key
-    bool hasFilesKey = false;
-        cout << "feo = " << yuju << endl;
-    for (const auto &file : multiparser.getFiles()) {
-        cout << "value = " << file.getItemName() << endl;
-        if (file.getItemName() == "files") {  // Check if the key name matches
-            hasFilesKey = true;
-            break;
-        }
-    }
-
-    //validate entity key
-    auto parameters = multiparser.getParameters();
-    std::string entity;
-    if (parameters("entity") != parameters.end()) {
-        entity = parameters["entity"];
-    } else {
-        LOG_ERROR << "Missing 'entity' field";
-        auto resp = HttpResponse::newHttpResponse();
-        resp->setStatusCode(HttpStatusCode::k400BadRequest);
-        resp->setBody(R"({"error": "Missing entity field"})");
-        callback(resp);
-        return;
-    }
+    RequestFormatValidator::validateFormDataFormat(parsedRequest);
+    ExistingFieldsChecker existingFieldsChecker(multiparser, validatedFields);
+    existingFieldsChecker.validate();
 
     //upload files
-    std::vector<std::string> fileNames;
+    vector<string> fileNames;
     auto files = multiparser.getFiles();
     for (const auto &file : files) {
         fileNames.push_back(file.getFileName());
         file.save("./uploads/" + file.getFileName());  // Save uploaded file
     }
 
-//validate existense of parameters and existense of files
-    if (parameters.empty() || multiparser.getFiles().empty()) {
-        auto resp = HttpResponse::newHttpResponse();
-        resp->setStatusCode(HttpStatusCode::k400BadRequest);
-        resp->setBody(R"({"error": "Missing form fields"})");
-        callback(resp);
-        return;
-    }
-
     try {
-        SaveMediaFilesDto media(entity, fileNames);
+       /*  SaveMediaFilesDto media(entity, fileNames);
         media.verifyValidParameters(parameters);
-        media.validate(); // Call validation function
+        media.validate();  */
     } catch (const std::exception &e) {
         LOG_ERROR << "Validation Error: " << e.what();
         auto resp = HttpResponse::newHttpResponse();
@@ -74,6 +40,9 @@ void FilesController::saveFile(const HttpRequestPtr& req, std::function<void (co
         callback(resp);
         return;
     }
+
+    
+
     // LOG_DEBUG << "Entity: " << entity;
     // LOG_DEBUG << "File Data: " << file.substr(0, 100) << "...";  // Limit log output
 

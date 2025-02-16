@@ -1,4 +1,6 @@
-#include "SaveMediaFilesDto.h"
+/* #include "SaveMediaFilesDto.h"
+
+using namespace std;
 
 //it is possible to define private members in a .cc file
 const unordered_set<string> SaveMediaFilesDto::validEntities = {"avatars", "patientFiles", "patientProgressImages", "chats"};
@@ -10,3 +12,4 @@ const string SaveMediaFilesDto::entitiesAsString = []() {  //anonymous lambda fu
     }
     return oss.str();
 }();
+ */
