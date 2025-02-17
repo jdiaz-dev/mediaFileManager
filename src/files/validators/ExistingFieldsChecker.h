@@ -1,11 +1,18 @@
 #include <stdexcept>
-#include <drogon/MultiPart.h>
+#include <variant> 
+#include <vector>
+#include <string>
+#include <unordered_set>
+#include <drogon/MultiPart.h> 
 
 using namespace std;
+using namespace drogon;
 
 class ExistingFieldsChecker {
-    private: 
+    protected:
         MultiPartParser multiparser;
+        unordered_map<string, variant<string, vector<string>>> validFields;
+    private: 
         unordered_map<string, bool> fieldsToValidate;
         void initializeValidatedFields(){
             for (auto& field : this->validFields) {
@@ -29,14 +36,14 @@ class ExistingFieldsChecker {
                 if (this->fieldsToValidate.find(keyName) != this->fieldsToValidate.end()) {
                     this->fieldsToValidate[keyName] = true;
 
-                    // ✅ Extracting a vector<string> safely
+                    //  Extracting a vector<string> safely
                     if (auto* fileList = get_if<vector<string>>(&this->validFields.find(keyName)->second)) {
                         fileList->push_back(fileName);  
                     } 
                 } 
             }
         }
-        void validateFields(){
+        void checkFields(){
             for (const auto& field : this->fieldsToValidate) {
                 if(field.second == false){
                     throw invalid_argument("Field " + field.first + " is required");
@@ -44,14 +51,13 @@ class ExistingFieldsChecker {
             }
         }
     public:
-        unordered_map<string, variant<string, vector<string>>> validFields;
         ExistingFieldsChecker(MultiPartParser& multiparser, unordered_map<string, variant<string, vector<string>>>& validFields) : multiparser(multiparser), validFields(validFields) {}
 
-        void validate(){
+        void validateFields(){
             initializeValidatedFields();
             analyzeInParameters();
             analyzeInFiles();
-            validateFields();
+            checkFields();
         }
 };
 

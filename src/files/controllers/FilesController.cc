@@ -2,9 +2,8 @@
 #include "FilesController.h"
 #include <drogon/MultiPart.h>
 #include <drogon/HttpRequest.h>
-#include "../validators/SaveMediaFilesDto.h"
+#include "../validators/FieldValuesChecker.h"
 #include "../validators/RequestFormatValidator.h"
-#include "../validators/ExistingFieldsChecker.h"
 
 using namespace std;
 using namespace drogon;
@@ -14,11 +13,12 @@ void FilesController::saveFile(const HttpRequestPtr& req, std::function<void (co
     MultiPartParser multiparser;
     int parsedRequest = multiparser.parse(req); 
     string name = "entity";
-    unordered_map<string, variant<string, vector<string>>> validatedFields = {{"entity", ""}, {"files", vector<string>{}}};
+    unordered_map<string, variant<string, vector<string>>> validFields = {{"entity", ""}, {"files", vector<string>{}}};
 
     RequestFormatValidator::validateFormDataFormat(parsedRequest);
-    ExistingFieldsChecker existingFieldsChecker(multiparser, validatedFields);
-    existingFieldsChecker.validate();
+    FieldValuesChecker fieldValuesChecker(multiparser, validFields);
+    fieldValuesChecker.validateFields();
+    fieldValuesChecker.validateFieldValues();
 
     //upload files
     vector<string> fileNames;
@@ -29,8 +29,8 @@ void FilesController::saveFile(const HttpRequestPtr& req, std::function<void (co
     }
 
     try {
-       /*  SaveMediaFilesDto media(entity, fileNames);
-        media.verifyValidParameters(parameters);
+        /* SaveMediaFilesDto media(entity, fileNames);
+        media.validate(parameters);
         media.validate();  */
     } catch (const std::exception &e) {
         LOG_ERROR << "Validation Error: " << e.what();

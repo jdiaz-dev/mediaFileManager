@@ -23,7 +23,7 @@ add_executable(${PROJECT_NAME}
     src/main.cc
     src/health-check/HealthCheckController.cc
     src/files/controllers/FilesController.cc
-    src/files/validators/SaveMediaFilesDto.cc
+    src/files/validators/FieldValuesChecker.cc
     # src/files/validators/RequestFormatValidator.cc
     
 )
