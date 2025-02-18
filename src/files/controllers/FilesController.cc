@@ -9,29 +9,33 @@ using namespace std;
 using namespace drogon;
 
 void FilesController::saveFile(const HttpRequestPtr& req, std::function<void (const HttpResponsePtr &)> &&callback) {
-
-    MultiPartParser multiparser;
-    int parsedRequest = multiparser.parse(req); 
-    string name = "entity";
-    unordered_map<string, variant<string, vector<string>>> validFields = {{"entity", ""}, {"files", vector<string>{}}};
-
-    RequestFormatValidator::validateFormDataFormat(parsedRequest);
-    FieldValuesChecker fieldValuesChecker(multiparser, validFields);
-    fieldValuesChecker.validateFields();
-    fieldValuesChecker.validateFieldValues();
-
-    //upload files
-    vector<string> fileNames;
-    auto files = multiparser.getFiles();
-    for (const auto &file : files) {
-        fileNames.push_back(file.getFileName());
-        file.save("./uploads/" + file.getFileName());  // Save uploaded file
-    }
-
     try {
-        /* SaveMediaFilesDto media(entity, fileNames);
-        media.validate(parameters);
-        media.validate();  */
+        MultiPartParser multiparser;
+        int parsedRequest = multiparser.parse(req); 
+        string name = "entity";
+        unordered_map<string, variant<string, vector<string>>> validFields = {{"entity", ""}, {"files", vector<string>{}}};
+
+        RequestFormatValidator::validateFormDataFormat(parsedRequest);
+        FieldValuesChecker fieldValuesChecker(multiparser, validFields);
+        fieldValuesChecker.validateFields();
+        fieldValuesChecker.validateFieldValues();
+
+        //upload files
+        vector<string> fileNames;
+        auto files = multiparser.getFiles();
+        for (const auto &file : files) {
+            fileNames.push_back(file.getFileName());
+            file.save("./uploads/" + file.getFileName());  // Save uploaded file
+        }
+
+        // Create response
+        Json::Value response;
+        response["message"] = "Upload successful!";
+        // response["entity"] = entity;
+
+        auto resp = HttpResponse::newHttpJsonResponse(response);
+        callback(resp);
+
     } catch (const std::exception &e) {
         LOG_ERROR << "Validation Error: " << e.what();
         auto resp = HttpResponse::newHttpResponse();
@@ -40,27 +44,6 @@ void FilesController::saveFile(const HttpRequestPtr& req, std::function<void (co
         callback(resp);
         return;
     }
-
     
-
-    // LOG_DEBUG << "Entity: " << entity;
-    // LOG_DEBUG << "File Data: " << file.substr(0, 100) << "...";  // Limit log output
-
-    // Create response
-    Json::Value response;
-    response["message"] = "Upload successful!";
-    // response["entity"] = entity;
-
-    auto resp = HttpResponse::newHttpJsonResponse(response);
-    callback(resp);
 }
 
-/* 
-    validate form-data format
-    validatePresenceOfFields
-    extract fields
-    internal validation
-        - entity: chats, users, avatars,
-        - format type: pdf, .png, jpeg
-    save file
- */

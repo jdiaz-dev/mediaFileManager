@@ -35,17 +35,14 @@ class FieldValuesChecker : public ExistingFieldsChecker {
             if(!isValid) throw invalid_argument("Invalid file format");
         } 
         void validateFileFormats(){
-            vector<string> files;
             if (auto* filesPtr = get_if<vector<string>>(&this->validFields["files"])) {
-                files = *filesPtr;  // ✅ Safe extraction
+                if (filesPtr->empty()) throw invalid_argument("Files cannot be empty");
+        
+                for(const string& file : *filesPtr) {
+                    this->isValidFileFormat(file);
+                }
             } else {
                 throw invalid_argument("Files must be an array of strings!");
-            }
-
-            if(files.size() == 0) throw invalid_argument("Files cannot be empty" );
-
-            for (const std::string& file : files) {
-                this->isValidFileFormat(file);
             }
         }
 
@@ -57,31 +54,3 @@ class FieldValuesChecker : public ExistingFieldsChecker {
             this->validateFileFormats();
         }
 };
-
-
-/* bool isValidFormat(const std::string& filename) {
-    // Allowed formats
-    const std::set<std::string> validFormats = {".jpg", ".png", ".gif", ".bmp", ".jpeg"};
-
-    // Find the last dot to extract extension
-    size_t dotPos = filename.rfind('.');
-    if (dotPos == std::string::npos) return false; // No extension found
-
-    std::string extension = filename.substr(dotPos);
-    return validFormats.find(extension) != validFormats.end();
-}
-
-int main() {
-    std::vector<std::string> files = {"image.jpg", "document.pdf", "photo.png", "file.bmp"};
-
-    for (const std::string& file : files) {
-        if (isValidFormat(file)) {
-            std::cout << file << " is a valid format." << std::endl;
-        } else {
-            std::cout << file << " is NOT a valid format." << std::endl;
-        }
-    }
-
-    return 0;
-}
- */
