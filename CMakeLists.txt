@@ -24,7 +24,8 @@ add_executable(${PROJECT_NAME}
     src/health-check/HealthCheckController.cc
     src/files/controllers/FilesController.cc
     src/files/validators/FieldValuesChecker.cc
-    # src/files/validators/RequestFormatValidator.cc
+    src/files/validators/ExistingFieldsChecker.cc
+    src/files/validators/RequestFormatValidator.cc
     
 )
 
