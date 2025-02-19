@@ -10,11 +10,11 @@ using namespace std;
 
 class FieldValuesChecker : public ExistingFieldsChecker {
     private:
-        static const unordered_set<string> validEntities;
-        static const string entitiesAsString;
+        static const unordered_set<string> validActions;
+        static const string actionsAsString;
         static const unordered_set<string> validFileFormats;
 
-        void isValidEntity();
+        void isValidAction();
         void isValidFileFormat(const std::string& filename);
         void validateFileFormats();
     public:

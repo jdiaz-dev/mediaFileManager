@@ -1,3 +1,4 @@
+#include <variant> 
 #include <utility> // for std::pair
 #include "FilesController.h"
 #include <drogon/MultiPart.h>
@@ -12,10 +13,9 @@ void FilesController::saveFile(const HttpRequestPtr& req, std::function<void (co
     try {
         MultiPartParser multiparser;
         int parsedRequest = multiparser.parse(req); 
-        string name = "entity";
-        unordered_map<string, variant<string, vector<string>>> validFields = {{"entity", ""}, {"files", vector<string>{}}};
-
         RequestFormatValidator::validateFormDataFormat(parsedRequest);
+       
+        unordered_map<string, variant<string, vector<string>>> validFields = {{"action", ""}, {"files", vector<string>{}}};
         FieldValuesChecker fieldValuesChecker(multiparser, validFields);
         fieldValuesChecker.validateFields();
         fieldValuesChecker.validateFieldValues();
@@ -40,7 +40,7 @@ void FilesController::saveFile(const HttpRequestPtr& req, std::function<void (co
         LOG_ERROR << "Validation Error: " << e.what();
         auto resp = HttpResponse::newHttpResponse();
         resp->setStatusCode(HttpStatusCode::k400BadRequest);
-        resp->setBody(R"({"error": ")" + std::string(e.what()) + R"("})");
+        resp->setBody(R"({"error": ")" + string(e.what()) + R"("})");
         callback(resp);
         return;
     }
