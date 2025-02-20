@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.5)
 project(mediaFilesManager CXX)
 
 include(CheckIncludeFileCXX)
+find_package(PkgConfig REQUIRED)
 
 check_include_file_cxx(any HAS_ANY)
 check_include_file_cxx(string_view HAS_STRING_VIEW)
@@ -18,6 +19,18 @@ endif ()
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+
+# for glib-2.0 lib
+pkg_check_modules(GLIB REQUIRED glib-2.0)
+include_directories(${GLIB_INCLUDE_DIRS})
+link_directories(${GLIB_LIBRARY_DIRS})
+add_definitions(${GLIB_CFLAGS_OTHER})
+
+# for vips lib
+pkg_check_modules(VIPS REQUIRED vips)
+include_directories(${VIPS_INCLUDE_DIRS})
+link_directories(${VIPS_LIBRARY_DIRS})
+add_definitions(${VIPS_CFLAGS_OTHER})
 
 add_executable(${PROJECT_NAME} 
     src/main.cc
@@ -37,7 +50,12 @@ add_executable(${PROJECT_NAME}
 #
 # and comment out the following lines
 find_package(Drogon CONFIG REQUIRED)
-target_link_libraries(${PROJECT_NAME} PRIVATE Drogon::Drogon)
+target_link_libraries(${PROJECT_NAME} 
+    PRIVATE Drogon::Drogon
+    PRIVATE ${GLIB_LIBRARIES}
+    PRIVATE ${VIPS_LIBRARIES}
+    PRIVATE vips-cpp 
+)
 
 # ##############################################################################
 
