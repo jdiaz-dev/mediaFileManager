@@ -8,7 +8,7 @@
 
 using namespace std;
 
-class FieldValuesChecker : public ExistingFieldsChecker {
+class FieldValuesChecker {
     private:
         static const unordered_set<string> validActions;
         static const string actionsAsString;
@@ -18,6 +18,7 @@ class FieldValuesChecker : public ExistingFieldsChecker {
         void isValidFileFormat(const std::string& filename);
         void validateFileFormats();
     public:
-        FieldValuesChecker(MultiPartParser& multiparser, unordered_map<string, variant<string, vector<string>>>& validFields); 
+        unordered_map<string, variant<string, vector<string>>> validFields;
+        FieldValuesChecker(unordered_map<string, variant<string, vector<string>>>& validFields); 
         void validateFieldValues();
 };

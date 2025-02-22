@@ -45,9 +45,8 @@ void FieldValuesChecker::validateFileFormats(){
     }
 }
 
-FieldValuesChecker::FieldValuesChecker(MultiPartParser& multiparser, unordered_map<string, variant<string, vector<string>>>& validFields) 
-
-    : ExistingFieldsChecker(multiparser, validFields) {}
+FieldValuesChecker::FieldValuesChecker(unordered_map<string, variant<string, vector<string>>>& validFields) 
+    : validFields(validFields) {}
 void FieldValuesChecker::validateFieldValues() {
     this->isValidAction();
     this->validateFileFormats();

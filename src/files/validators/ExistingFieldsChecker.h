@@ -10,16 +10,16 @@ using namespace std;
 using namespace drogon;
 
 class ExistingFieldsChecker {
-    protected:
-        MultiPartParser multiparser;
-        unordered_map<string, variant<string, vector<string>>> validFields;
     private: 
+        MultiPartParser multiparser;
         unordered_map<string, bool> fieldsToValidate;
-        void initializeValidatedFields();
+        vector<HttpFile> files;
+        void initializeFieldsToValidate();
         void analyzeInParameters();
         void analyzeInFiles();
         void checkFields();
     public:
+        unordered_map<string, variant<string, vector<string>>> validFields;
         ExistingFieldsChecker(MultiPartParser& multiparser, unordered_map<string, variant<string, vector<string>>>& validFields);
         void validateFields();
 };

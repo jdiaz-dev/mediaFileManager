@@ -1,6 +1,7 @@
 #include "ExistingFieldsChecker.h"
 
-void ExistingFieldsChecker::initializeValidatedFields(){
+void ExistingFieldsChecker::initializeFieldsToValidate(){
+    this->files = this->multiparser.getFiles();
     for (auto& field : this->validFields) {
         this->fieldsToValidate[field.first] = false;
     }
@@ -15,7 +16,7 @@ void ExistingFieldsChecker::analyzeInParameters(){
     }
 }
 void ExistingFieldsChecker::analyzeInFiles() {
-    for (const auto &file : this->multiparser.getFiles()) {
+    for (const auto &file : this->files) {
         string keyName = file.getItemName();
         string fileName = file.getFileName();
         if (this->fieldsToValidate.find(keyName) != this->fieldsToValidate.end()) {
@@ -38,7 +39,7 @@ void ExistingFieldsChecker::checkFields(){
     }
 }
 void ExistingFieldsChecker::validateFields(){
-    initializeValidatedFields();
+    initializeFieldsToValidate();
     analyzeInParameters();
     analyzeInFiles();
     checkFields();

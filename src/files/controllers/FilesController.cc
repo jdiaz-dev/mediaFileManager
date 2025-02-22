@@ -20,17 +20,11 @@ void FilesController::saveFile(const HttpRequestPtr& req, std::function<void (co
         RequestFormatValidator::validateFormDataFormat(parsedRequest);
        
         unordered_map<string, variant<string, vector<string>>> validFields = {{"action", ""}, {"files", vector<string>{}}};
-        FieldValuesChecker fieldValuesChecker(multiparser, validFields);
-        fieldValuesChecker.validateFields();
+        ExistingFieldsChecker existingFieldsChecker(multiparser, validFields);
+        existingFieldsChecker.validateFields();
+        FieldValuesChecker fieldValuesChecker(existingFieldsChecker.validFields);
         fieldValuesChecker.validateFieldValues();
 
-        //upload files
-        /* vector<string> fileNames;
-        auto files = multiparser.getFiles();
-        for (const auto &file : files) {
-            fileNames.push_back(file.getFileName());
-            file.save("./uploads/" + file.getFileName());  // Save uploaded file
-        } */
 
         for (const auto& file : multiparser.getFiles()) {
             std::string keyName = file.getItemName();
