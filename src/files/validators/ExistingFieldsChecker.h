@@ -22,6 +22,7 @@ class ExistingFieldsChecker {
         unordered_map<string, variant<string, vector<string>>> validFields;
         ExistingFieldsChecker(MultiPartParser& multiparser, unordered_map<string, variant<string, vector<string>>>& validFields);
         void validateFields();
+        vector<string> saveFiles();
 };
 
     

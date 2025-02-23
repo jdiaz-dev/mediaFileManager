@@ -44,3 +44,15 @@ void ExistingFieldsChecker::validateFields(){
     analyzeInFiles();
     checkFields();
 }
+vector<string> ExistingFieldsChecker::saveFiles(){
+    vector<string> savedFiles;
+    for (const auto &file : this->files) {
+        string fileName = file.getFileName();
+        string tempPath = "./files/" + fileName;
+        if (file.saveAs(tempPath) != 0) {
+            throw invalid_argument("Failed to save uploaded file!");
+        }
+        savedFiles.push_back(tempPath);
+    }
+    return savedFiles;
+}

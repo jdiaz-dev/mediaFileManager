@@ -13,5 +13,4 @@ class FilesController : public drogon::HttpController<FilesController>
     //(const HttpResponsePtr &): is a smart pointer : https://www.geeksforgeeks.org/smart-pointers-cpp/
     //&&: rvalue reference : https://www.geeksforgeeks.org/lvalues-references-and-rvalues-references-in-c-with-examples/
     void saveFile(const HttpRequestPtr& req, std::function<void (const HttpResponsePtr &)> &&callback);
-    bool compressImage(const std::string& inputPath, const std::string& outputPath, int quality);
 };

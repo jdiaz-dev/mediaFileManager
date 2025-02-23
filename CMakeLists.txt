@@ -39,6 +39,8 @@ add_executable(${PROJECT_NAME}
     src/files/validators/FieldValuesChecker.cc
     src/files/validators/ExistingFieldsChecker.cc
     src/files/validators/RequestFormatValidator.cc
+    src/files/services/ImageCompressorService.cc
+    src/files/services/MediaFilesManagerService.cc
     
 )
 
