@@ -1,4 +1,9 @@
+#include <vector>
+#include <string>
+#include <variant>
 #include "ExistingFieldsChecker.h"
+
+using namespace std;
 
 void ExistingFieldsChecker::initializeFieldsToValidate(){
     this->files = this->multiparser.getFiles();
