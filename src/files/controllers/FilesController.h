@@ -1,4 +1,3 @@
-// #pragma once
 #include <drogon/HttpController.h>
 
 using namespace drogon;

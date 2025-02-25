@@ -1,6 +1,7 @@
 #include <filesystem> 
 #include <vips/vips8>
 #include "ImageCompressorService.h"
+#include <iostream>
 
 using namespace std;
 using namespace vips;
@@ -11,16 +12,16 @@ void ImageCompressorService::compress(const std::string& inputPath, const std::s
         throw invalid_argument("Failed to initialize VIPS");
     }
     try {
-        std::filesystem::path outputDir = std::filesystem::path(outputPath).parent_path();
-        if (!std::filesystem::exists(outputDir)) {
-            std::filesystem::create_directories(outputDir);  // ✅ Create directory if missing
+        filesystem::path outputDir = filesystem::path(outputPath).parent_path();
+        if (!filesystem::exists(outputDir)) {
+            filesystem::create_directories(outputDir);  // ✅ Create directory if missing
         }
         VImage img = VImage::new_from_file(inputPath.c_str());
-        if (outputPath.rfind(".jpg") || outputPath.rfind(".jpeg")) {
+        if (outputPath.rfind(".jpg") != string::npos || outputPath.rfind(".jpeg") != string::npos) {
             img.jpegsave(outputPath.c_str(), VImage::option()->set("Q", quality));
-        } else if (outputPath.rfind(".png")) {
+        } else if (outputPath.rfind(".png") != string::npos) {
             img.pngsave(outputPath.c_str(), VImage::option()->set("compression", 9));
-        } else if (outputPath.rfind(".webp")) {
+        } else if (outputPath.rfind(".webp") != string::npos) {
             img.webpsave(outputPath.c_str(), VImage::option()->set("Q", quality));
         } else {
             vips_error_exit("Unsupported format!");
